@@ -63,48 +63,21 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-        # print('runValueIteration ', self.values)
-        # prevValues = self.values
-        for i in range(self.iterations):
-            mdpStates = self.mdp.getStates()
-            newValues = {}
-            for state in mdpStates:
-                legalActions = self.mdp.getPossibleActions(state)
-                #what if legalActions is empty
-                maxValue = 0
-                if legalActions:
-                    values = [self.computeQValueFromValues(state, action) for action in legalActions]
-                    maxValue = max(values)
-
-                # maxIndexes = [i for i in len(values) if values[i] is maxValue]
-                newValues[state] = maxValue
-
-            for state in mdpStates:
-                self.values[state] = newValues[state]
-
-        return
-    # def runValueIteration(self):
-    #     # Write value iteration code here
-    #     "*** YOUR CODE HERE ***"
-    #     while self.iterations > 0:
-    #         vals = ()
-    #         allStates = self.mdp.getStates()
-    #         for s in allStates:
-    #             allActions = self.mdp.getPossibleActions(s)
-    #             for a in allActions:
-    #                 maxValues = max([self.computeQValueFromValues(s,a) for a in allActions])
-    #             vals[s] = maxValues
-    #         for s in allStates:
-    #             self.values[s] = vals[s]
-                    
-    #         #         reachableStates = self.mdp.getTransitionStatesAndProbs(s, a)
-    #         #         value = 0
-    #         #         for nextState, prob in reachableStates:
-    #         #             value += prob * (self.mdp.getReward(s, a, nextState) + self.discount*tmpVal[nextState])
-    #         #         chances.append(value)
-    #         #     if len(chances) != 0:
-    #         #         self.values[s] = max(chances)
-    #         # self.iterations -= 1
+        while self.iterations > 0:
+            tmpVal = self.values.copy()
+            allStates = self.mdp.getStates()
+            for s in allStates:
+                allActions = self.mdp.getPossibleActions(s)
+                chances = []
+                for a in allActions:
+                    reachableStates = self.mdp.getTransitionStatesAndProbs(s, a)
+                    value = 0
+                    for nextState, prob in reachableStates:
+                        value += prob * (self.mdp.getReward(s, a, nextState) + self.discount*tmpVal[nextState])
+                    chances.append(value)
+                if len(chances) != 0:
+                    self.values[s] = max(chances)
+            self.iterations -= 1
 
     def getValue(self, state):
         """
